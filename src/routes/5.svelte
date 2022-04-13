@@ -3,68 +3,40 @@
 	let startsWith = 'a';
 	let numberOfWords = 0;
 	let dataPromise;
-	let isLoading = false;
 
-	// 1. path parameters
-	//    GET api/listOfWords/ab/2
-	//    api/listOfWords/[numberOfWords]/[startsWith]/index.ts
-
-	// async function fetchData() {
-	// 	const response = await fetch(`api/listOfWords/${numberOfWords}/${startsWith}`);
-	// 	return await response.json();
-	// }
-
-	// 2. query parameters
-	//    GET api/listOfWords?numberOfWords=2&startsWith=a
-	//    api/listOfWords/index.ts
-
-	// async function fetchData() {
-	// 	const query = new URLSearchParams();
-	// 	if (numberOfWords) query.set('numberOfWords', numberOfWords.toString());
-	// 	if (startsWith) query.set('startsWith', startsWith);
-	// 	const response = await fetch(`api/listOfWords?${query.toString()}`);
-	// 	return await response.json();
-	// }
-
-	// 3. POST
-	//   params passed in body
-	//   retrieved via request.json()
+	// 3. Graphql via POST
+	//   query and params passed in body
+	//   retrieved via (request.json())data.listOfWords
 
 	async function fetchData() {
-		const response = await fetch(`api/listOfWords`, {
+		const response = await fetch(`api/graphql`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				numberOfWords,
-				startsWith
+				query: `{ listOfWords(startsWith: "${startsWith}", numberOfWords: ${numberOfWords}) }`
 			})
 		});
-		return await response.json();
+		return (await response.json()).data.listOfWords;
 	}
-
-	// 4. FORM submit
 </script>
 
-<form action="api/form" method="POST">
-	<label>Starts with<input name="startsWith" type="text" bind:value={startsWith} /></label>
-	<label
-		>Number of words<input
-			name="numberOfWords"
-			type="number"
-			min="0"
-			bind:value={numberOfWords}
-		/></label
-	>
-	<!-- <button
+<h2>Graphql</h2>
+<label>Starts with<input name="startsWith" type="text" bind:value={startsWith} /></label>
+<label
+	>Number of words<input
+		name="numberOfWords"
+		type="number"
+		min="0"
+		bind:value={numberOfWords}
+	/></label
+>
+<button
 	on:click={() => {
 		dataPromise = fetchData();
 	}}>Fetch data</button
-> -->
-
-	<button type="submit">Fetch data</button>
-</form>
+>
 
 {#if dataPromise}
 	{#await dataPromise}

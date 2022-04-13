@@ -18,7 +18,6 @@ export async function get({ url }) {
 //   retrieved via request.json()
 
 export async function post({ request }) {
-	console.log('request', request);
 	const { numberOfWords, startsWith } = await request.json();
 	const words = data.filter((word) => word.startsWith(startsWith)).slice(0, numberOfWords);
 	return {
